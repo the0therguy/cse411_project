@@ -7,19 +7,68 @@
 <body>
 {% block context %}
 <h1>Create a new account</h1>
-<form action="" method="post">
-    {% csrf_token %}
-    {% for field in form %}
-    <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% if field.help_text %}
-        <small style="color: grey"></small>{{field.help_text}}
-        {% endif %}
-    </p>
-    {% endfor %}
-    <button type="submit">Sign up</button>
-</form>
+<div class="boxes">
+    <div class="containerr">
+        <form class="login-form" method="post">
+            {% csrf_token %}
+            <div class="frm">
+                <label>First Name</label>
+                <input class="form-control" type="text" name="first_name" placeholder="Enter First Name">
+            </div>
+            <br>
+            <div class="frm">
+                <label>Last Name</label>
+                <input class="form-control" type="text" name="last_name" placeholder="Enter Last Name">
+            </div>
+            <br>
+            <div class="frm">
+                <label>Username</label>
+                <input class="form-control" type="text" name="username" placeholder="Enter Username">
+            </div>
+            <br>
+            <div class="frm">
+                <label>Phone Number</label>
+                <input class="form-control" type="text" name="phone_number" placeholder="Enter Phone Number">
+            </div>
+            <br>
+
+            <div class='frm'>
+                <label>E-Mail</label>
+                <input class="form-control" type="email" name="email" placeholder="Enter Email">
+            </div>
+            <br>
+            <div class='frm'>
+                <label for="sex">Choose your sex</label>
+                <select name="sex">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <br>
+            <div class="frm">
+                <label>Password</label>
+                <input class="form-control" type="password" name="password1" placeholder="Enter Password">
+            </div>
+            <br>
+            <div class="frm">
+                <label>Confirm Password</label>
+                <input class="form-control" type="password" name="password2" placeholder="Confirm Password">
+            </div>
+            <br>
+            <input class="buttonnn" type="submit" value="Sign Up">
+
+        </form>
+    </div>
+    <div class="container-frm">
+        {% for message in messages %}
+        <h3 style="color: red">{{ message }}</h3>
+        {% endfor %}
+    </div>
+    <div class="container-frm">
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+</div>
+
 {% endblock %}
 
 </body>
