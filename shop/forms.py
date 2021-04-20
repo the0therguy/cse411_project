@@ -1,19 +1,14 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .models import *
 
 
-class SignupForm(UserCreationForm):
-    mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
-    phone_number = forms.CharField(validators=[mobile_num_regex])
-    choices = (
-        ('male', "Male"),
-        ("female", "Female")
-    )
-    sex = forms.ChoiceField(choices=choices)
+class PasswordChangingForm(PasswordChangeForm):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password1 = forms.CharField(max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
-        labels = {'phone_number': 'phone_number', 'sex': 'sex'}
+        fields = ('old_password', 'new_password1', 'new_password2')
