@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.models import auth
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from .forms import *
@@ -26,6 +27,7 @@ def registration(request):
         username = request.POST['username']
         email = request.POST['email']
         phone_number = request.POST['phone_number']
+        sex = request.POST['sex']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
         if password1 == password2:  # checking if the confirmation password matches or not
@@ -42,10 +44,12 @@ def registration(request):
                                                 last_name=l_name)
                 user.save()
                 customer = Customer.objects.create(
-                    **{'id': user.id, 'user': user, 'name': f_name + " " + l_name, 'phone_number': phone_number})
+                    **{'id': user.id, 'user': user, 'name': f_name + " " + l_name, 'phone_number': phone_number,
+                       'sex': sex})
+                customer.save()
                 messages.info(request, 'DONE')  # passes this message
                 # print("DONE")
-                return redirect('login/')
+                return HttpResponse('Successfully created')
         else:
             messages.info(request, 'password not matching')
             return redirect('registration/')
@@ -61,7 +65,7 @@ def login(request):
         user = auth.authenticate(username=username, password=password)  # auto matches the user name and password
         if user is not None:  # means username and password exist
             auth.login(request, user)
-            return redirect('')
+            return HttpResponse("Successfully logged in")
         else:
             messages.info(request, 'Invalid credentials')
             return redirect('login')
@@ -71,4 +75,4 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('/')
+    return HttpResponse('/')
