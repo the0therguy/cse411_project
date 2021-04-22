@@ -12,6 +12,7 @@ from .forms import *
 
 def home(request):
     products = Product.objects.all()
+    "Hello najia"
     context = {'products': products}
     return render(request, 'shop/home.html', context)
 
@@ -88,3 +89,4 @@ class PasswordsChangeView(PasswordChangeView):
 
 def password_success(request):
     return render(request, 'shop/password_success.html')
+
