@@ -12,7 +12,6 @@ from .forms import *
 
 def home(request):
     products = Product.objects.all()
-    "Hello najia"
     context = {'products': products}
     return render(request, 'shop/home.html', context)
 
@@ -37,11 +36,11 @@ def registration(request):
             if User.objects.filter(username=username).exists():
                 messages.info(request, 'Username taken')  # passes this message (also edit in HTML)
                 # print("User name taken")
-                return redirect('registration')
+                return redirect('registration/')
             elif User.objects.filter(email=email).exists():
                 messages.info(request, 'Email already exists')  # passes this message
                 # print('email taken')
-                return redirect('registration')
+                return redirect('registration/')
             else:
                 user = User.objects.create_user(username=username, password=password1, email=email, first_name=f_name,
                                                 last_name=l_name)
@@ -89,4 +88,5 @@ class PasswordsChangeView(PasswordChangeView):
 
 def password_success(request):
     return render(request, 'shop/password_success.html')
+
 
