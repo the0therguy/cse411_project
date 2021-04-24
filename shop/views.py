@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .forms import *
@@ -46,15 +46,17 @@ def registration(request):
                                                 last_name=l_name)
                 user.save()
                 customer = Customer.objects.create(
-                    **{'id': user.id, 'user': user, 'name': f_name + " " + l_name, 'phone_number': phone_number,
+                    **{'id': user.id, 'user': user, 'name': f_name + " " + l_name,
                        'sex': sex})
                 customer.save()
                 messages.info(request, 'DONE')  # passes this message
                 # print("DONE")
-                return HttpResponse('Successfully created')
+                return redirect('login')
+                # return HttpResponse('Successfully created')
+
         else:
             messages.info(request, 'password not matching')
-            return redirect('registration/')
+            return redirect('registration')
         # return redirect('/')  # returns to homepage
     else:  # sending a get rqst
         return render(request, 'shop/register.html')
@@ -88,5 +90,3 @@ class PasswordsChangeView(PasswordChangeView):
 
 def password_success(request):
     return render(request, 'shop/password_success.html')
-
-

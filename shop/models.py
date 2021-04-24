@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -11,9 +10,7 @@ class Customer(models.Model):
         ('female', 'Female'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=200, null=True)
-    mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
-    phone_number = models.CharField(validators=[mobile_num_regex], max_length=13, blank=True)
+    name = models.CharField(max_length=100, null=True)
     sex = models.CharField(max_length=20, choices=CHOICES)
 
     def __str__(self):
@@ -24,8 +21,6 @@ class DeliveryBoy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, unique=True)
-    mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
-    phone_number = models.CharField(validators=[mobile_num_regex], max_length=13, blank=True)
     preferred_location = models.TextField()
     status = models.BooleanField(default=False)
 
