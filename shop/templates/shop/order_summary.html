@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order summary</title>
+</head>
+<body>
+<h1>Order summary</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Item title</th>
+        <th scope="col">Brand name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Total Item Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in order.products.all %}
+    <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{item.product.name}}</td>
+        <td>{{item.product.brand_name}}</td>
+        <td>{{item.product.price}}</td>
+        <td>{{item.quantity}}</td>
+        <td>{{item.get_total}}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">
+            Your cart is empty
+        </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="4"><b>Order Total</b></td>
+        <td>{{order.get_order_total}}</td>
+    </tr>
+    <tr>
+        <td colspan="5">
+            <a class='btn btn-warning float-right ml-2' href=''>Proceed to checkout</a>
+            <br>
+            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

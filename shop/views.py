@@ -145,3 +145,10 @@ def remove_from_cart(request, id):
             return redirect("product", id=id)
 
     return redirect("product", id=id)
+
+
+def order_summary(request):
+    customer = Customer.objects.get(id=1)
+    order = Order.objects.get(customer=customer, ordered=False)
+    context = {'order': order}
+    return render(request, 'shop/order_summary.html', context=context)
