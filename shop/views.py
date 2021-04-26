@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 
 from .forms import *
@@ -90,3 +90,7 @@ class PasswordsChangeView(PasswordChangeView):
 
 def password_success(request):
     return render(request, 'shop/password_success.html')
+
+
+def add_to_cart(request, id):
+    item = get_object_or_404(Item, id=id)

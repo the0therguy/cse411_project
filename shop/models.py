@@ -37,6 +37,9 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return f"/product/{self.id}/"
+
     @property
     def imageURL(self):
         try:
@@ -46,23 +49,38 @@ class Product(models.Model):
         return url
 
 
-class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-    date_ordered = models.DateTimeField(auto_now_add=True)
-    complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=255)
-
-    def __str__(self):
-        return str(self.id)
-
-
 class OrderItem(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    ordered = models.BooleanField(default=False)
     quantity = models.IntegerField(default=0, null=True, blank=True)
-    date_added = models.DateField(auto_now_add=True)
 
-    @property
     def get_total(self):
         self.total = self.product.price * self.quantity
         return total
+
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name}"
+
+
+class Address(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    phone_number = models.CharField(max_length=12)
+    street = models.CharField(max_length=100)
+    appartment = models.CharField(max_length=100)
+    area = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.customer.name
+
+
+class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+    shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.id)
