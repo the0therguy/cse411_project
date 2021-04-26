@@ -20,5 +20,6 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='shop/password_reset_complete.html'),
          name='password_reset_complete'),
-    path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart')
+    path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart'),
+    path('remove-from-cart/<int:id>/', views.remove_from_cart, name='remove_from_cart'),
 ]

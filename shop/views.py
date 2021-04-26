@@ -97,17 +97,51 @@ def password_success(request):
 
 def add_to_cart(request, id):
     product = get_object_or_404(Product, id=id)
-    order_item = OrderItem.objects.create(**{'product': product})
     customer = Customer.objects.get(id=1)
+    order_item, created = OrderItem.objects.get_or_create(product=product,
+                                                          customer=customer,
+                                                          ordered=False)
     order_qs = Order.objects.filter(**{'customer': customer, 'ordered': False}).first()
     if order_qs is None:
         order = Order.objects.create(
             **{'customer': customer, 'date_ordered': str(date.today())})
         order.products.add(order_item)
         order.save()
+        messages.info(request, "This item was added to your cart.")
+        return redirect("product", id=id)
     else:
         if order_qs.products.filter(product__id=product.id).exists():
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "This item quantity was updated")
+            return redirect("product", id=id)
+        else:
+            order_qs.products.add(order_item)
+            messages.info(request, "This item was added to your cart.")
+            return redirect("product", id=id)
+
+
+def remove_from_cart(request, id):
+    product = get_object_or_404(Product, id=id)
+    customer = Customer.objects.get(id=1)
+    order_item, created = OrderItem.objects.get_or_create(product=product,
+                                                          customer=customer,
+                                                          ordered=False)
+    order_qs = Order.objects.filter(**{'customer': customer, 'ordered': False}).first()
+    if order_qs is None:
+        messages.info(request, "you do not have an active order")
+        return redirect("product", id=id)
+    else:
+        if order_qs.products.filter(product__id=product.id).exists():
+            order_item = OrderItem.objects.filter(product=product,
+                                                  customer=customer,
+                                                  ordered=False)[0]
+
+            order_qs.products.remove(order_item)
+            order_item.delete()
+            messages.info(request, "This item is removed from your cart")
+        else:
+            messages.info(request, "This is not in your cart")
+            return redirect("product", id=id)
+
     return redirect("product", id=id)

@@ -43,6 +43,9 @@ class Product(models.Model):
     def get_add_to_cart_url(self):
         return f"add-to-cart/{self.id}/"
 
+    def get_remove_from_cart_url(self):
+        return f"remove-from-cart/{self.id}/"
+
     @property
     def imageURL(self):
         try:
