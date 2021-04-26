@@ -40,6 +40,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         return f"/product/{self.id}/"
 
+    def get_add_to_cart_url(self):
+        return f"add-to-cart/{self.id}/"
+
     @property
     def imageURL(self):
         try:
@@ -53,7 +56,7 @@ class OrderItem(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     ordered = models.BooleanField(default=False)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    quantity = models.IntegerField(default=1, null=True, blank=True)
 
     def get_total(self):
         self.total = self.product.price * self.quantity
@@ -76,8 +79,9 @@ class Address(models.Model):
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    date_ordered = models.DateTimeField(auto_now_add=True)
+    products = models.ManyToManyField(OrderItem)
+    ordered = models.BooleanField(default=False)
+    date_ordered = models.DateField()
     shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     being_delivered = models.BooleanField(default=False)
     received = models.BooleanField(default=False)

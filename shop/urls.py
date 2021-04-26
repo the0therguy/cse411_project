@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('product/<int:id>/', views.product_view, name='product_view'),
+    path('product/<int:id>/', views.product_view, name='product'),
     path('registration/', views.registration, name='registration'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
@@ -20,4 +20,5 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='shop/password_reset_complete.html'),
          name='password_reset_complete'),
+    path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart')
 ]

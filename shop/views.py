@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
@@ -18,6 +20,7 @@ def home(request):
 
 def product_view(request, id):
     product = Product.objects.get(id=id)
+
     context = {'product': product}
     return render(request, 'shop/product_view.html', context=context)
 
@@ -93,4 +96,18 @@ def password_success(request):
 
 
 def add_to_cart(request, id):
-    item = get_object_or_404(Item, id=id)
+    product = get_object_or_404(Product, id=id)
+    order_item = OrderItem.objects.create(**{'product': product})
+    customer = Customer.objects.get(id=1)
+    order_qs = Order.objects.filter(**{'customer': customer, 'ordered': False}).first()
+    if order_qs is None:
+        order = Order.objects.create(
+            **{'customer': customer, 'date_ordered': str(date.today())})
+        order.products.add(order_item)
+        order.save()
+    else:
+        if order_qs.products.filter(product__id=product.id).exists():
+            order_item.quantity += 1
+            order_item.save()
+            messages.info(request, "This item quantity was updated")
+    return redirect("product", id=id)
