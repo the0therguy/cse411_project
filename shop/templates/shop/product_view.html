@@ -10,6 +10,11 @@
     <div><strong>{{product.name}}</strong></div>
     <div><strong>{{product.brand_name}}</strong></div>
     <div><strong>{{product.price}}</strong></div>
+    <div class="container-frm">
+        {% for message in messages %}
+        <h3 style="color: red">{{ message }}</h3>
+        {% endfor %}
+    </div>
 </div>
 </body>
 </html>

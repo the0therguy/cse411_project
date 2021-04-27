@@ -3,9 +3,11 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.views.generic import View
 
 from .forms import *
 
@@ -39,7 +41,7 @@ def registration(request):
             if User.objects.filter(username=username).exists():
                 messages.info(request, 'Username taken')  # passes this message (also edit in HTML)
                 # print("User name taken")
-                return redirect('registration/')
+                return redirect('login/')
             elif User.objects.filter(email=email).exists():
                 messages.info(request, 'Email already exists')  # passes this message
                 # print('email taken')
@@ -72,7 +74,8 @@ def login(request):
         user = auth.authenticate(username=username, password=password)  # auto matches the user name and password
         if user is not None:  # means username and password exist
             auth.login(request, user)
-            return HttpResponse("Successfully logged in")
+            # return HttpResponse("Successfully logged in")
+            return redirect('/')
         else:
             messages.info(request, 'Invalid credentials')
             return redirect('login')
@@ -108,17 +111,17 @@ def add_to_cart(request, id):
         order.products.add(order_item)
         order.save()
         messages.info(request, "This item was added to your cart.")
-        return redirect("product", id=id)
+        return redirect("order_summary")
     else:
         if order_qs.products.filter(product__id=product.id).exists():
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "This item quantity was updated")
-            return redirect("product", id=id)
+            return redirect("order_summary")
         else:
             order_qs.products.add(order_item)
             messages.info(request, "This item was added to your cart.")
-            return redirect("product", id=id)
+            return redirect("order_summary")
 
 
 def remove_from_cart(request, id):
@@ -130,7 +133,38 @@ def remove_from_cart(request, id):
     order_qs = Order.objects.filter(**{'customer': customer, 'ordered': False}).first()
     if order_qs is None:
         messages.info(request, "you do not have an active order")
-        return redirect("product", id=id)
+        return redirect("/")
+    else:
+        if order_qs.products.filter(product__id=product.id).exists():
+            order_item = OrderItem.objects.filter(product=product,
+                                                  customer=customer,
+                                                  ordered=False)[0]
+
+            order_item.quantity -= 1
+            if order_item.quantity == 0:
+                order_qs.products.remove(order_item)
+                order_item.delete()
+                order_qs.save()
+            else:
+                order_item.save()
+            messages.info(request, "This item is updated")
+        else:
+            messages.info(request, "This is not in your cart")
+            return redirect("order_summary")
+
+    return redirect("order_summary")
+
+
+def remove_full_product_from_cart(request, id):
+    product = get_object_or_404(Product, id=id)
+    customer = Customer.objects.get(id=1)
+    order_item, created = OrderItem.objects.get_or_create(product=product,
+                                                          customer=customer,
+                                                          ordered=False)
+    order_qs = Order.objects.filter(**{'customer': customer, 'ordered': False}).first()
+    if order_qs is None:
+        messages.info(request, "you do not have an active order")
+        return redirect("/")
     else:
         if order_qs.products.filter(product__id=product.id).exists():
             order_item = OrderItem.objects.filter(product=product,
@@ -142,9 +176,9 @@ def remove_from_cart(request, id):
             messages.info(request, "This item is removed from your cart")
         else:
             messages.info(request, "This is not in your cart")
-            return redirect("product", id=id)
+            return redirect("order_summary")
 
-    return redirect("product", id=id)
+    return redirect("order_summary")
 
 
 def order_summary(request):
@@ -152,3 +186,42 @@ def order_summary(request):
     order = Order.objects.get(customer=customer, ordered=False)
     context = {'order': order}
     return render(request, 'shop/order_summary.html', context=context)
+
+
+class CheckoutView(View):
+    def get(self, *args, **kwargs):
+        form = CheckoutForm()
+        context = {
+            'form': form,
+        }
+        return render(self.request, 'shop/checkout.html', context=context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        try:
+            order = Order.objects.get(customer=Customer.objects.get(id=1), ordered=False)
+            if form.is_valid():
+                street_address = form.cleaned_data.get('street_address')
+                apartment_address = form.cleaned_data.get('apartment_address')
+                phone_number = form.cleaned_data.get('phone_number')
+                area = form.cleaned_data.get('area')
+                district = form.cleaned_data.get('district')
+                payment_options = form.cleaned_data.get('payment_options')
+                shipping_address = Address(
+                    customer=Customer.objects.get(id=1),
+                    phone_number=phone_number,
+                    street=street_address,
+                    apartment=apartment_address,
+                    area=area,
+                    district=district,
+
+                )
+                shipping_address.save()
+                order.shipping_address = shipping_address
+                order.save()
+                return redirect("checkout")
+            messages.warning(self.request, "Failed checkout")
+            return redirect("checkout")
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an order")
+            return redirect("checkout")

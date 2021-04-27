@@ -73,8 +73,9 @@ class Address(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     phone_number = models.CharField(max_length=12)
     street = models.CharField(max_length=100)
-    appartment = models.CharField(max_length=100)
+    apartment = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.customer.name

@@ -22,5 +22,7 @@ urlpatterns = [
          name='password_reset_complete'),
     path('add-to-cart/<int:id>/', views.add_to_cart, name='add_to_cart'),
     path('remove-from-cart/<int:id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('remove-full/<int:id>/', views.remove_full_product_from_cart, name='remove_full_product_from_cart'),
     path('order-summary/', views.order_summary, name='order_summary'),
+    path('checkout/', views.CheckoutView.as_view(), name='checkout'),
 ]
