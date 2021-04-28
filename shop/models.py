@@ -12,17 +12,8 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100, null=True)
     sex = models.CharField(max_length=20, choices=CHOICES)
-
-    def __str__(self):
-        return self.name
-
-
-class DeliveryBoy(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200, unique=True)
-    preferred_location = models.TextField()
-    status = models.BooleanField(default=False)
+    nid_no = models.CharField(max_length=20, null=True, blank=True)
+    phone_number = models.CharField(max_length=14, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -81,12 +72,22 @@ class Address(models.Model):
         return self.customer.name
 
 
+class PaymentTable(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    payment_option = models.CharField(max_length=10)
+    transaction_id = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     products = models.ManyToManyField(OrderItem)
     ordered = models.BooleanField(default=False)
     date_ordered = models.DateField()
-    shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+    payment = models.ForeignKey(PaymentTable, on_delete=models.SET_NULL, null=True, blank=True)
+    delivery_boy = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True,
+                                     related_name="delivery_boy")
     being_delivered = models.BooleanField(default=False)
     received = models.BooleanField(default=False)
 

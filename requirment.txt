@@ -1,3 +1,5 @@
 django
 pillow
 psycopg2
+stripe
+python-decouple==3.1

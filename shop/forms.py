@@ -5,6 +5,7 @@ from .models import *
 
 PAYMENT_CHOICES = (
     ('S', 'Stripe'),
+    ('B', 'Bkash'),
     ('C', 'Cash')
 )
 

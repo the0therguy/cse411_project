@@ -14,6 +14,7 @@ from .forms import *
 
 # Create your views here.
 
+
 def home(request):
     products = Product.objects.all()
     context = {'products': products}
@@ -207,18 +208,21 @@ class CheckoutView(View):
                 area = form.cleaned_data.get('area')
                 district = form.cleaned_data.get('district')
                 payment_options = form.cleaned_data.get('payment_options')
-                shipping_address = Address(
-                    customer=Customer.objects.get(id=1),
-                    phone_number=phone_number,
-                    street=street_address,
-                    apartment=apartment_address,
-                    area=area,
-                    district=district,
-
-                )
+                shipping_address = Address.objects.create(**
+                                                          {'customer': Customer.objects.get(id=1),
+                                                           'phone_number': phone_number,
+                                                           'street': street_address,
+                                                           'apartment': apartment_address,
+                                                           'area': area,
+                                                           'district': district, }
+                                                          )
                 shipping_address.save()
                 order.shipping_address = shipping_address
                 order.save()
+                # if payment_options == 'C':
+                #     order.update(**{'ordered': True})
+                #     order.save()
+                #     return render(self.request, 'shop/order_confirmation.html')
                 return redirect("checkout")
             messages.warning(self.request, "Failed checkout")
             return redirect("checkout")
