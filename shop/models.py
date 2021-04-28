@@ -78,6 +78,9 @@ class PaymentTable(models.Model):
     transaction_id = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.customer.name
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
