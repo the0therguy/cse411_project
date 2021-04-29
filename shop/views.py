@@ -229,3 +229,19 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.error(self.request, "You do not have an order")
             return redirect("checkout")
+
+
+def profile(request):
+    customer = Customer.objects.get(id=1)
+    user = User.objects.get(id=1)
+    name = customer.__dict__.get('name')
+    sex = customer.__dict__.get('sex')
+    first_name = user.__dict__.get('first_name')
+    last_name = user.__dict__.get('last_name')
+    email = user.__dict__.get('email')
+    username = user.__dict__.get('username')
+    order = Order.objects.filter(**{'customer': customer, 'ordered': True})
+    context = {'name': name, 'sex': sex, 'first_name': first_name, 'last_name': last_name, 'email': email,
+               'username': username,
+               'order': order}
+    return render(request, 'shop/profile.html', context=context)

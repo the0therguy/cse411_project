@@ -11,10 +11,13 @@
 
 <h1>this is home</h1>
 <a class="float-right" href="{% url 'login' %}">Login</a>
-&nbsp
+&nbsp;
 <a href="{% url 'registration' %}">Sign up</a>
-&nbsp
+&nbsp;
 <a href="{% url 'order_summary' %}">Order Summary</a>
+&nbsp;
+<a href="{% url 'profile' %}">profile</a>
+<br>
 <div class="row">
     {% for product in products %}
     <div class="col-lg-4">
