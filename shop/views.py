@@ -17,6 +17,7 @@ from .forms import *
 
 def home(request):
     products = Product.objects.all()
+    
     context = {'products': products}
     return render(request, 'shop/home.html', context)
 
@@ -100,8 +101,9 @@ def password_success(request):
 
 
 def add_to_cart(request, id):
+    current_user = request.user
     product = get_object_or_404(Product, id=id)
-    customer = Customer.objects.get(id=1)
+    customer = Customer.objects.get(id=current_user.id)
     order_item, created = OrderItem.objects.get_or_create(product=product,
                                                           customer=customer,
                                                           ordered=False)
@@ -126,8 +128,9 @@ def add_to_cart(request, id):
 
 
 def remove_from_cart(request, id):
+    current_user = request.user
     product = get_object_or_404(Product, id=id)
-    customer = Customer.objects.get(id=1)
+    customer = Customer.objects.get(id=current_user.id)
     order_item, created = OrderItem.objects.get_or_create(product=product,
                                                           customer=customer,
                                                           ordered=False)
@@ -183,7 +186,8 @@ def remove_full_product_from_cart(request, id):
 
 
 def order_summary(request):
-    customer = Customer.objects.get(id=1)
+    current_user = request.user
+    customer = Customer.objects.get(id=current_user.id)
     order = Order.objects.get(customer=customer, ordered=False)
     context = {'order': order}
     return render(request, 'shop/order_summary.html', context=context)
@@ -232,8 +236,10 @@ class CheckoutView(View):
 
 
 def profile(request):
-    customer = Customer.objects.get(id=1)
-    user = User.objects.get(id=1)
+    
+    current_user = request.user
+    customer = Customer.objects.get(id=current_user.id)
+    user = User.objects.get(id=current_user.id)
     name = customer.__dict__.get('name')
     sex = customer.__dict__.get('sex')
     first_name = user.__dict__.get('first_name')
