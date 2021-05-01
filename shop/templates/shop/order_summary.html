@@ -31,16 +31,21 @@
         <td>{{item.product.price}}</td>
         <td>{{item.quantity}}</td>
         <td>
-            <i class="fas fa-angle-up"></i>
+            <a href="{% url 'add_to_cart' item.product.id %}"><i class="fas fa-angle-up"></i></a>
             <br>
-            <i class="fas fa-angle-down"></i></td>
+            <a href="{% url 'remove_from_cart' item.product.id %}"><i class="fas fa-angle-down"></i></a>
+        </td>
         <td>{{item.get_total}}</td>
+        <td>
+            <a style="color: red;" href="{% url 'remove_full_product_from_cart' item.product.id %}"><i
+                    class="fas fa-trash"></i></a>
+        </td>
 
 
     </tr>
     {% empty %}
     <tr>
-        <td colspan="5">
+        <td colspan=" 5">
             Your cart is empty
         </td>
     </tr>
