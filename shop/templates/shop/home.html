@@ -22,39 +22,133 @@
         .nav {
             text-align: right;
         }
+
+.item {
+    background: #fff;
+    padding: 17px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.main {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    background: #f7f8fa;
+    min-height: 100vh;
+}
+
+img.thumbnail {
+    width: 100%;
+}
+a.product-title:hover {
+    color: #000;
+    text-decoration: none;
+}
+
+a.product-title {
+    text-decoration: none;
+    font-family: 'Roboto';
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+    /* text-align: center; */
+    display: block;
+    margin-top: 10px;
+}
+
+p.product-brand, .product-price {
+    margin-bottom: 0px;
+    font-family: 'Roboto';
+    font-size: 15px;
+    font-weight: 400;
+    color: #656565;
+}
+
+p.product-brand>span, .product-price>span {
+    color: #020202;
+    font-size: 16px;
+}
+
+a.add-to-cart {
+    display: block;
+    padding: 5px;
+    border: 2px solid #0d6efd;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #0d6efd;
+    background: #ffffff;
+    font-family: 'Roboto';
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 400;
+    border-radius: 11px;
+}
+
     </style>
 </head>
 <body>
-    <!-- Header  -->
-    <div style="width: 100%; height: 70px; padding-left:20px; padding-right: 20px;">
-        <!-- logo -->
-        <div style="height: 70px; display: inline-block; width: 20%; float: left;">
-            <h2 style="font-family: Roboto; font-weight: 700; font-size: 30px; color: rgb(65, 133, 211); line-height:68px; text-align: center ">
-                E-COM.
-            </h2>
-        </div>
-        
-        <!-- Navigation Menu -->
-        <div class="nav" style=" height: 70px; display: inline-block; width: 80%; float: right;">
-            {% if request.user.is_authenticated %}
-                <a class="nav-link" href="{% url 'order_summary' %}">Order Summary</a>
-                <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                
-                <a class="nav-link" href="">Log Out</a>
-            {% else %}
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
+    <!-- Header Start  -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- logo -->
+                    <div style="height: 70px; display: inline-block;">
+                        <h2 style="font-family: Roboto; font-weight: 700; font-size: 30px; color: rgb(65, 133, 211); line-height:68px; padding-left: 20px;">
+                            <a href="{% url 'home' %}" style="text-decoration:none;">E-COM.</a>    
+                        </h2>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="navbar" style="display:block; width: 100%; text-align: right">
+                        {% if request.user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        
+                        <a class="nav-link" href="{% url 'order_summary' %}">Cart</a>
 
-                <a class="nav-link" href="{% url 'registration' %}">Sign up</a>
-            {% endif %}
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        {% else %}
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+
+                            <a class="nav-link" href="{% url 'registration' %}">Sign up</a>
+                            
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    <!-- Header End -->
+
+    <!-- Main Section Start -->
+    <div class="main">
+        <div class="container">
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md-3">
+                    <div class="item">
+                        <img src="{{ product.image.url }}" alt="" class="thumbnail">
+                        <a href="{{product.get_absolute_url}} " class="product-title">{{ product.name }}</a>
+                        <p class="product-brand">Brand: <span>{{ product.brand_name }}</span></p>
+                        <p class="product-price">Price: <span>{{ product.price }}</span></p>
+                        <div class="product-buttons">
+                            <a href="{{product.get_add_to_cart_url}}" class="add-to-cart">Add To Cart</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+        
 
+    <!-- Main Section End -->
 
-<br>
-<div class="row">
+<!-- <div class="row">
     {% for product in products %}
     <div class="col-lg-4">
-        <img class="thumbnail" src="{{product.image}}">
+        <img class="thumbnail" src="{{product.image.url}}">
+        
         <div><strong><a href="{{product.get_absolute_url}} ">{{product.name}}</a></strong></div>
         <div><strong>{{product.brand_name}}</strong></div>
         <div><strong>{{product.price}}</strong></div>
@@ -71,12 +165,7 @@
     </div>
 
     {% endfor %}
-    <div class="container-frm">
-        {% for message in messages %}
-        <h3 style="color: red">{{ message }}</h3>
-        {% endfor %}
-    </div>
 
-</div>
+</div> -->
 </body>
 </html>

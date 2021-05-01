@@ -56,7 +56,7 @@ def registration(request):
                     **{'id': user.id, 'user': user, 'name': f_name + " " + l_name,
                        'sex': sex})
                 customer.save()
-                messages.info(request, 'DONE')  # passes this message
+                messages.info(request, 'You are successfully registered. Now login.')  # passes this message
                 # print("DONE")
                 return redirect('login')
                 # return HttpResponse('Successfully created')
@@ -87,7 +87,8 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return HttpResponse('/')
+    # return HttpResponse('/')
+    return redirect('home')
 
 
 class PasswordsChangeView(PasswordChangeView):
