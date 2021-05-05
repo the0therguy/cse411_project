@@ -5,11 +5,17 @@
     <title>Order Accept</title>
 </head>
 <body>
-{% for o in order %}
-{{o.customer.name}}
+<select id="order">
+    {% for o in order %}
+    <option value="{{o.id}}">{{o.id}}</option>
+    {{o.customer.name}}
+    <br>
+    {{o.shipping_address.area}}
+    <br>
+    {% endfor %}
+</select>
 <br>
-{{o.shipping_address.area}}
-<br>
-{% endfor %}
+<input class="button login-form-button" type="submit" value="Submit">
+
 </body>
 </html>

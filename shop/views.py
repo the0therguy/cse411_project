@@ -245,12 +245,27 @@ def checkout(request):
 def order_accepting(request):
     user = request.user
     if user.is_staff:
+        if request.method == "POST":
+            return HttpResponse("shei")
         order = Order.objects.filter(**{'being_delivered': False})
-        print(order.values())
+        # print(order.values())
         context = {'order': order}
         return render(request, 'shop/order_accept.html', context=context)
     return HttpResponse("Permission denied")
 
 
+@login_required
 def delivery_boy(request):
-    return HttpResponse()
+    user = request.user
+    if user.is_staff:
+        return HttpResponse("You already regisered")
+    if request.method == "POST":
+        nid_no = request.POST.get("nid_no")
+        phone_number = request.POST.get("phone_number")
+        customer = Customer.objects.filter(**{'user': user})
+        customer.update(**{'nid_no': nid_no, 'phone_number': phone_number})
+        user.is_staff = True
+        user.save()
+        return redirect('/')
+
+    return render(request, "shop/delivery_boy_registration.html")
