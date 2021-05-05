@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
 from django.http import HttpResponse
@@ -11,7 +12,6 @@ from .forms import *
 
 
 # Create your views here.
-
 
 def home(request):
     products = Product.objects.all()
@@ -186,8 +186,10 @@ def order_summary(request):
     return render(request, 'shop/order_summary.html', context=context)
 
 
+@login_required
 def profile(request):
-    customer = Customer.objects.get(id=1)
+    user = request.user
+    customer = Customer.objects.filter(**{'user': user})
     user = User.objects.get(id=1)
     name = customer.__dict__.get('name')
     sex = customer.__dict__.get('sex')
@@ -237,3 +239,18 @@ def checkout(request):
     else:
         context = {}
         return render(request, 'shop/checkout.html', context=context)
+
+
+@login_required
+def order_accepting(request):
+    user = request.user
+    if user.is_staff:
+        order = Order.objects.filter(**{'being_delivered': False})
+        print(order.values())
+        context = {'order': order}
+        return render(request, 'shop/order_accept.html', context=context)
+    return HttpResponse("Permission denied")
+
+
+def delivery_boy(request):
+    return HttpResponse()

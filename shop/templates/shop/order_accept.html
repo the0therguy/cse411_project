@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Accept</title>
+</head>
+<body>
+{% for o in order %}
+{{o.customer.name}}
+<br>
+{{o.shipping_address.area}}
+<br>
+{% endfor %}
+</body>
+</html>
