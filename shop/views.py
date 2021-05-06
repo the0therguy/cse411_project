@@ -193,16 +193,10 @@ def order_summary(request):
 
 @login_required
 def profile(request):
-<<<<<<< HEAD
     
     current_user = request.user
     customer = Customer.objects.get(id=current_user.id)
     user = User.objects.get(id=current_user.id)
-=======
-    user = request.user
-    customer = Customer.objects.filter(**{'user': user})
-    user = User.objects.get(id=1)
->>>>>>> 38d724a1545b6ed6f635f862664e17b4a8e26c31
     name = customer.__dict__.get('name')
     sex = customer.__dict__.get('sex')
     first_name = user.__dict__.get('first_name')
