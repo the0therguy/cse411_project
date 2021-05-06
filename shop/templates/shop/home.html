@@ -129,7 +129,6 @@ a.add-to-cart {
                 {% for product in products %}
                 <div class="col-md-3">
                     <div class="item">
-                        <img src="{{ product.image.url }}" alt="" class="thumbnail">
                         <a href="{{product.get_absolute_url}} " class="product-title">{{ product.name }}</a>
                         <p class="product-brand">Brand: <span>{{ product.brand_name }}</span></p>
                         <p class="product-price">Price: <span>{{ product.price }}</span></p>
@@ -166,8 +165,7 @@ a.add-to-cart {
 
     {% for product in products %}
     <div class="col-lg-4">
-        <img class="thumbnail" src="{{product.image.url}}">
-        
+
         <div><strong><a href="{{product.get_absolute_url}} ">{{product.name}}</a></strong></div>
         <div><strong>{{product.brand_name}}</strong></div>
         <div><strong>{{product.price}}</strong></div>

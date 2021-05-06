@@ -15,7 +15,7 @@ from .forms import *
 
 def home(request):
     products = Product.objects.all()
-    
+
     context = {'products': products}
     return render(request, 'shop/home.html', context)
 
@@ -98,6 +98,7 @@ def password_success(request):
     return render(request, 'shop/password_success.html')
 
 
+@login_required
 def add_to_cart(request, id):
     current_user = request.user
     product = get_object_or_404(Product, id=id)
@@ -112,19 +113,18 @@ def add_to_cart(request, id):
         order.products.add(order_item)
         order.save()
         messages.info(request, "This item was added to your cart.")
-        return redirect("order_summary")
     else:
         if order_qs.products.filter(product__id=product.id).exists():
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "This item quantity was updated")
-            return redirect("order_summary")
         else:
             order_qs.products.add(order_item)
             messages.info(request, "This item was added to your cart.")
-            return redirect("order_summary")
+    return redirect("order_summary")
 
 
+@login_required
 def remove_from_cart(request, id):
     current_user = request.user
     product = get_object_or_404(Product, id=id)
@@ -157,6 +157,7 @@ def remove_from_cart(request, id):
     return redirect("order_summary")
 
 
+@login_required
 def remove_full_product_from_cart(request, id):
     product = get_object_or_404(Product, id=id)
     customer = Customer.objects.get(id=1)
@@ -183,6 +184,7 @@ def remove_full_product_from_cart(request, id):
     return redirect("order_summary")
 
 
+@login_required
 def order_summary(request):
     current_user = request.user
     customer = Customer.objects.get(id=current_user.id)
@@ -193,7 +195,6 @@ def order_summary(request):
 
 @login_required
 def profile(request):
-    
     current_user = request.user
     customer = Customer.objects.get(id=current_user.id)
     user = User.objects.get(id=current_user.id)
