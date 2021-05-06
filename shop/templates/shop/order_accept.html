@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Accept</title>
+</head>
+<body>
+<select id="order">
+    {% for o in order %}
+    <option value="{{o.id}}">{{o.id}}</option>
+    {{o.customer.name}}
+    <br>
+    {{o.shipping_address.area}}
+    <br>
+    {% endfor %}
+</select>
+<br>
+<input class="button login-form-button" type="submit" value="Submit">
+
+</body>
+</html>

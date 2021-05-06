@@ -144,9 +144,26 @@ a.add-to-cart {
     </div>
         
 
-    <!-- Main Section End -->
+<!-- Main Section End -->
 
 <!-- <div class="row">
+
+<h1>this is home</h1>
+<a class="float-right" href="{% url 'login' %}">Login</a>
+&nbsp;
+<a href="{% url 'registration' %}">Sign up</a>
+&nbsp;
+<a href="{% url 'order_summary' %}">Order Summary</a>
+&nbsp;
+<a href="{% url 'profile' %}">profile</a>
+&nbsp;
+<a href="{% url 'logout' %}">logout</a>
+&nbsp;
+<p>Sign up as a delivery boy and earn extra money<a href="{% url 'delivery_boy' %}">Registration Page</a></p>
+<br>
+
+<div class="row">
+
     {% for product in products %}
     <div class="col-lg-4">
         <img class="thumbnail" src="{{product.image.url}}">

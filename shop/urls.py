@@ -10,7 +10,8 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     # path('change_password/', auth_views.PasswordChangeView.as_view(template_name='shop/change_password.html'), name='change_password')
-    path('change_password/', views.PasswordsChangeView.as_view(template_name='shop/change_password.html')),
+    path('change_password/', views.PasswordsChangeView.as_view(template_name='shop/change_password.html'),
+         name='change_password'),
     path('password_success/', views.password_success, name='password_success'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='shop/password_reset_form.html'),
          name='password_reset'),
@@ -24,6 +25,8 @@ urlpatterns = [
     path('remove-from-cart/<int:id>/', views.remove_from_cart, name='remove_from_cart'),
     path('remove-full/<int:id>/', views.remove_full_product_from_cart, name='remove_full_product_from_cart'),
     path('order-summary/', views.order_summary, name='order_summary'),
-    path('checkout/', views.CheckoutView.as_view(), name='checkout'),
     path('profile/', views.profile, name='profile'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('order_accepting/', views.order_accepting, name='order_accepting'),
+    path('delivery/', views.delivery_boy, name='delivery_boy'),
 ]

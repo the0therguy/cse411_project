@@ -1,19 +1,17 @@
 from datetime import date
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import auth
 from django.contrib.auth.views import PasswordChangeView
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import View
 
 from .forms import *
 
 
 # Create your views here.
-
 
 def home(request):
     products = Product.objects.all()
@@ -35,7 +33,6 @@ def registration(request):
         l_name = request.POST['last_name']
         username = request.POST['username']
         email = request.POST['email']
-        phone_number = request.POST['phone_number']
         sex = request.POST['sex']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
@@ -194,53 +191,18 @@ def order_summary(request):
     return render(request, 'shop/order_summary.html', context=context)
 
 
-class CheckoutView(View):
-    def get(self, *args, **kwargs):
-        form = CheckoutForm()
-        context = {
-            'form': form,
-        }
-        return render(self.request, 'shop/checkout.html', context=context)
-
-    def post(self, *args, **kwargs):
-        form = CheckoutForm(self.request.POST or None)
-        try:
-            order = Order.objects.get(customer=Customer.objects.get(id=1), ordered=False)
-            if form.is_valid():
-                street_address = form.cleaned_data.get('street_address')
-                apartment_address = form.cleaned_data.get('apartment_address')
-                phone_number = form.cleaned_data.get('phone_number')
-                area = form.cleaned_data.get('area')
-                district = form.cleaned_data.get('district')
-                payment_options = form.cleaned_data.get('payment_options')
-                shipping_address = Address.objects.create(**
-                                                          {'customer': Customer.objects.get(id=1),
-                                                           'phone_number': phone_number,
-                                                           'street': street_address,
-                                                           'apartment': apartment_address,
-                                                           'area': area,
-                                                           'district': district, }
-                                                          )
-                shipping_address.save()
-                order.shipping_address = shipping_address
-                order.save()
-                # if payment_options == 'C':
-                #     order.update(**{'ordered': True})
-                #     order.save()
-                #     return render(self.request, 'shop/order_confirmation.html')
-                return redirect("checkout")
-            messages.warning(self.request, "Failed checkout")
-            return redirect("checkout")
-        except ObjectDoesNotExist:
-            messages.error(self.request, "You do not have an order")
-            return redirect("checkout")
-
-
+@login_required
 def profile(request):
+<<<<<<< HEAD
     
     current_user = request.user
     customer = Customer.objects.get(id=current_user.id)
     user = User.objects.get(id=current_user.id)
+=======
+    user = request.user
+    customer = Customer.objects.filter(**{'user': user})
+    user = User.objects.get(id=1)
+>>>>>>> 38d724a1545b6ed6f635f862664e17b4a8e26c31
     name = customer.__dict__.get('name')
     sex = customer.__dict__.get('sex')
     first_name = user.__dict__.get('first_name')
@@ -252,3 +214,70 @@ def profile(request):
                'username': username,
                'order': order}
     return render(request, 'shop/profile.html', context=context)
+
+
+def checkout(request):
+    if request.method == 'POST':
+        street_address = request.POST.get('street')
+        apartment_address = request.POST.get('apartment')
+        phone_number = request.POST.get('phone_number')
+        area = request.POST.get('area')
+        district = request.POST.get('district')
+        payment_option = request.POST.get('payment-option')
+        if payment_option == 'cash':
+            shipping_address = Address.objects.create(**{
+                'customer': Customer.objects.get(id=1),
+                'phone_number': phone_number,
+                'street': street_address,
+                'apartment': apartment_address,
+                'area': area,
+                'district': district
+            })
+            shipping_address.save()
+            order_item = Order.objects.filter(**{'customer': Customer.objects.get(id=1), 'ordered': False})
+            payment = PaymentTable.objects.create(**{
+                'customer': Customer.objects.get(id=1),
+                'payment_option': payment_option,
+                'transaction_id': '',
+            })
+            payment.save()
+            order_item.update(**{'shipping_address': shipping_address, 'payment': payment, 'ordered': True})
+            context = {'order': order_item}
+            return render(request, 'shop/cash_payment.html', context=context)
+        else:
+            messages.info(request, "Those options are not available at this moment")
+            return redirect("checkout")
+
+    else:
+        context = {}
+        return render(request, 'shop/checkout.html', context=context)
+
+
+@login_required
+def order_accepting(request):
+    user = request.user
+    if user.is_staff:
+        if request.method == "POST":
+            return HttpResponse("shei")
+        order = Order.objects.filter(**{'being_delivered': False})
+        # print(order.values())
+        context = {'order': order}
+        return render(request, 'shop/order_accept.html', context=context)
+    return HttpResponse("Permission denied")
+
+
+@login_required
+def delivery_boy(request):
+    user = request.user
+    if user.is_staff:
+        return HttpResponse("You already regisered")
+    if request.method == "POST":
+        nid_no = request.POST.get("nid_no")
+        phone_number = request.POST.get("phone_number")
+        customer = Customer.objects.filter(**{'user': user})
+        customer.update(**{'nid_no': nid_no, 'phone_number': phone_number})
+        user.is_staff = True
+        user.save()
+        return redirect('/')
+
+    return render(request, "shop/delivery_boy_registration.html")
